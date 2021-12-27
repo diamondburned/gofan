@@ -108,25 +108,25 @@ pollLoop:
 }
 
 type tempObserver struct {
-	val  int
 	file *fileutil.Scanner
+	val  int
 }
 
-func newTempObserver(path string) *tempObserver {
-	return &tempObserver{
+func newTempObserver(path string) tempObserver {
+	return tempObserver{
 		file: fileutil.NewScanner(path),
 	}
 }
 
 func (o *tempObserver) check() (changed bool, err error) {
-	var newTemp int
-	if err := o.file.Scan(&newTemp); err != nil {
+	t, err := o.file.ScanInt()
+	if err != nil {
 		return false, err
 	}
-	if newTemp == o.val {
+	if t == o.val {
 		return false, nil
 	}
-	o.val = newTemp
+	o.val = t
 	return true, nil
 }
 
@@ -135,8 +135,8 @@ type pwmObserver struct {
 	ease func(float64) float64
 }
 
-func newPWMObserver(ease func(float64) float64) *pwmObserver {
-	return &pwmObserver{
+func newPWMObserver(ease func(float64) float64) pwmObserver {
+	return pwmObserver{
 		ease: ease,
 	}
 }
